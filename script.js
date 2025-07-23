@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rarityMap = {
             'NONE': 'none.png',
-            'WHITE': 'white.png', // Ensure White.jpg is renamed to white.png
+            'WHITE': 'white.png', // Ensure White.jpg is renamed to white.png (and it's actually a PNG)
             'GREEN': 'green.png',
             'BLUE': 'blue.png',
             'PURPLE': 'purple.png',
@@ -43,8 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'PURPLE_PLUS': 'purple_plus.png',
             'ORANGE_PLUS': 'orange_plus.png',
             'RED_PLUS': 'red_plus.png',
-            // Add any other specific rarities you have in your JSON here, e.g.:
-            // 'LEGENDARY': 'legendary.png',
         };
 
         const filename = rarityMap[normalizedRarity] || 'none.png'; // Fallback to none.png if rarity not found
@@ -199,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const imageUrl = `https://free-fire-items.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
 
-            // Logic to display name: if name is null, use Icon, else 'Unknown'
             const displayName = item.name || item.Icon || 'Unknown'; 
 
             itemCard.innerHTML = `
