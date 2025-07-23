@@ -112,11 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             itemGrid.innerHTML = `
                 <div class="loading-placeholder" style="color: red; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3em; margin-bottom: 15px;"></i>
-                    <span>Error loading items.</span>
-                    <span>Please check the browser console (F12) for detailed error messages.</span>
-                    <span style="font-size: 0.8em; margin-top: 10px;">Possible issues: 'main.json' file missing/invalid, or incorrect file path.</span>
-                    <span style="font-size: 0.8em;">Also verify 'background' folder and its images are correct and accessible.</span>
-                    <span style="font-size: 0.7em; margin-top: 5px;">Error message: ${error.message}</span>
+                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
                 </div>
             `;
         }
