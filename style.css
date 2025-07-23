@@ -9,8 +9,8 @@
     --header-bg: #2c2c2c;
     --shadow-color: rgba(0, 0, 0, 0.4);
     /* Custom properties for rarity backgrounds on cards */
-    --bg-image: none; /* Default, overridden by JS */
-    /* --bg-opacity: 1;  This is not used directly in ::before now */
+    --bg-image: none;
+    --bg-opacity: 1; /* Make sure this is 1 for full opacity */
 }
 
 * {
@@ -221,11 +221,11 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: var(--bg-image); /* Use the custom property from JS */
-    background-size: cover; /* This makes the image cover the area */
+    background-image: var(--bg-image);
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 1; /* <-- CONFIRMED THIS IS 1 FOR FULL OPACITY */
+    opacity: var(--bg-opacity); /* Using var for consistency, but value is 1 */
     z-index: 0;
 }
 
@@ -233,10 +233,13 @@ main {
     width: 100px;
     height: 100px;
     object-fit: contain;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */ /* Removed this for finer control */
     position: relative;
     z-index: 1;
     flex-shrink: 0;
+    /* --- NEW ALIGNMENT ADJUSTMENTS --- */
+    padding-top: 10px; /* Add some padding to push it down */
+    transform: translateY(5px); /* Fine-tune vertical position */
 }
 
 .item-card h3 {
@@ -451,6 +454,8 @@ main {
     .item-card img {
         width: 80px;
         height: 80px;
+        padding-top: 5px; /* Adjust for smaller screens */
+        transform: translateY(2px);
     }
 
     .modal-content {
@@ -507,6 +512,8 @@ main {
     .item-card img {
         width: 70px;
         height: 70px;
+        padding-top: 3px;
+        transform: translateY(1px);
     }
 
     .item-card h3 {
