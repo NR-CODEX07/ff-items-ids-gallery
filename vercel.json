@@ -12,9 +12,5 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "ignore": [
-    "ITEM.zip",
-    "bot.py"
   ]
 }
