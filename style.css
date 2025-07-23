@@ -243,21 +243,22 @@ main {
 /* --- WATERMARK STYLING --- */
 .item-card .watermark {
     position: absolute;
-    bottom: 5px; /* Adjust vertical position */
-    right: 5px;  /* Adjust horizontal position */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for element's own size */
     color: rgba(255, 255, 255, 0.7); /* White with some transparency */
-    font-size: 0.7em; /* Small font size */
+    font-size: 0.8em; /* Adjusted font size */
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Dark shadow for readability */
     z-index: 2; /* Ensure it's above image and background */
     pointer-events: none; /* Make sure it doesn't interfere with click events on the card */
-    opacity: 0; /* Hidden by default */
-    transition: opacity 0.3s ease; /* Smooth fade in/out */
+    opacity: 1; /* Always visible */
+    /* transition: opacity 0.3s ease; Removed hover transition */
 }
 
-.item-card:hover .watermark {
-    opacity: 1; /* Show watermark on hover */
-}
+/* .item-card:hover .watermark {
+    opacity: 1; Removed hover effect
+} */
 /* --- END WATERMARK STYLING --- */
 
 
@@ -478,9 +479,7 @@ main {
     }
     
     .item-card .watermark {
-        font-size: 0.6em; /* Smaller watermark for smaller screens */
-        bottom: 3px;
-        right: 3px;
+        font-size: 0.7em; /* Slightly larger for consistency */
     }
 
     .modal-content {
@@ -542,9 +541,7 @@ main {
     }
     
     .item-card .watermark {
-        font-size: 0.5em; /* Even smaller watermark for mobile */
-        bottom: 2px;
-        right: 2px;
+        font-size: 0.6em; /* Even smaller watermark for mobile */
     }
 
     .item-card h3 {
