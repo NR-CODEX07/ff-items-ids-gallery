@@ -225,21 +225,20 @@ main {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: var(--bg-opacity); /* Using var for consistency, but value is 1 */
+    opacity: var(--bg-opacity);
     z-index: 0;
 }
 
 .item-card img {
-    width: 100px;
-    height: 100px;
+    /* --- NEW ALIGNMENT AND SIZE ADJUSTMENTS --- */
+    width: 110px; /* Increased size slightly */
+    height: 110px; /* Increased size slightly */
     object-fit: contain;
-    /* margin-bottom: 5px; */ /* Removed this for finer control */
     position: relative;
     z-index: 1;
     flex-shrink: 0;
-    /* --- NEW ALIGNMENT ADJUSTMENTS --- */
-    padding-top: 10px; /* Add some padding to push it down */
-    transform: translateY(5px); /* Fine-tune vertical position */
+    padding-top: 15px; /* Push image down */
+    transform: translateY(5px); /* Fine-tune vertical position further */
 }
 
 .item-card h3 {
@@ -452,10 +451,11 @@ main {
     }
 
     .item-card img {
-        width: 80px;
-        height: 80px;
-        padding-top: 5px; /* Adjust for smaller screens */
-        transform: translateY(2px);
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        width: 90px; /* Adjusted for tablet size */
+        height: 90px;
+        padding-top: 10px; /* Adjust padding-top */
+        transform: translateY(3px); /* Fine-tune for tablet */
     }
 
     .modal-content {
@@ -510,10 +510,11 @@ main {
     }
 
     .item-card img {
-        width: 70px;
-        height: 70px;
-        padding-top: 3px;
-        transform: translateY(1px);
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        width: 80px; /* Adjusted for mobile size */
+        height: 80px;
+        padding-top: 8px; /* Adjust padding-top */
+        transform: translateY(2px); /* Fine-tune for mobile */
     }
 
     .item-card h3 {
