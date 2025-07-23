@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Items Explorer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" id="homeIcon"> <!-- Added ID for JS click event -->
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="search-bar">
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search by Keyword, ItemId, Description, Type, Rarity, Icon...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            <!-- Smile emoji and 3 dots icons removed from here -->
+            <div class="nav-icons">
+                <!-- <div class="icon-wrapper"><i class="fas fa-smile-wink"></i></div> -->
+                <!-- <div class="icon-wrapper"><i class="fas fa-ellipsis-v"></i></div> -->
+            </div>
+        </nav>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label for="rareTypeFilter">RARE TYPE</label>
+                <select id="rareTypeFilter">
+                    <option value="ALL">ALL</option>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="itemTypeFilter">ITEM TYPE</label>
+                <select id="itemTypeFilter">
+                    <option value="ALL">ALL</option>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="collectionTypeFilter">COLLECTION TYPE</label>
+                <select id="collectionTypeFilter">
+                    <option value="ALL">ALL</option>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="item-grid" id="itemGrid">
+            <!-- Items will be loaded here by JavaScript -->
+            <div class="loading-placeholder" style="grid-column: 1 / -1;">Loading Items...</div>
+        </div>
+
+        <div class="pagination-controls">
+            <button id="prevPageBtn" disabled>< Previous</button>
+            <div class="page-numbers" id="pageNumbers">
+                <!-- Page numbers will be populated by JavaScript -->
+            </div>
+            <button id="nextPageBtn">Next ></button>
+        </div>
+    </main>
+
+    <!-- Item Details Modal -->
+    <div class="modal-overlay" id="itemDetailsModalOverlay">
+        <div class="modal-content" id="itemDetailsModal">
+            <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <img id="modalItemImage" src="" alt="Item Image" class="modal-item-image">
+                <h2 id="modalItemName"></h2>
+            </div>
+            <div class="modal-details">
+                <p><strong>ID:</strong> <span id="modalItemId"></span></p>
+                <p><strong>TYPE:</strong> <span id="modalItemType"></span></p>
+                <p><strong>COLLECTION:</strong> <span id="modalItemCollection"></span></p>
+                <p><strong>RARITY:</strong> <span id="modalItemRarity" class="rarity-display"></span></p>
+                <p><strong>UNIQUE:</strong> <span id="modalItemUnique"></span></p>
+                <p><strong>ICON:</strong> <span id="modalItemIcon"></span></p>
+                <p><strong>DESCRIPTION:</strong> <span id="modalItemDescription"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer is completely removed -->
+
+    <script src="script.js"></script>
+</body>
+</html>
