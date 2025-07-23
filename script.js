@@ -113,6 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="loading-placeholder" style="color: red; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3em; margin-bottom: 15px;"></i>
                     <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
+                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
+                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
                 </div>
             `;
         }
