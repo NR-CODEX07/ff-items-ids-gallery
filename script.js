@@ -43,12 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
             'PURPLE_PLUS': 'purple_plus.png',
             'ORANGE_PLUS': 'orange_plus.png',
             'RED_PLUS': 'red_plus.png',
-            // Add any other specific rarities you have in your JSON here, e.g.:
-            // 'LEGENDARY': 'legendary.png',
         };
 
         const filename = rarityMap[normalizedRarity] || 'none.png'; // Fallback to none.png if rarity not found
         const path = `background/${filename}`;
+        console.log(`DEBUG: Rarity input: '${rarity}', Normalized for map: '${normalizedRarity}', Expected file path: '${path}'`);
         return path;
     };
 
@@ -161,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Render items to the grid (updated name display logic)
+    // Render items to the grid
     function renderItems(itemsToDisplay) {
         itemGrid.innerHTML = '';
 
@@ -203,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             itemCard.innerHTML = `
                 <img src="${imageUrl}" alt="${displayName}">
                 <h3>${displayName}</h3>
-                <div class="watermark">NR-CODEX</div> <!-- WATERMARK ADDED HERE -->
+                <div class="watermark">NR-CODEX</div>
             `;
 
             const imgElement = itemCard.querySelector('img');
@@ -280,7 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCollectionType = collectionTypeFilter.value.toUpperCase();
         const searchTerm = searchInput.value.toLowerCase().trim();
 
-        console.log(`DEBUG Search/Filter: Term='${searchTerm}', Rare='${selectedRareType}', Item='${selectedItemType}', Collection='${selectedCollectionType}'`);
+        console.log(`--- Applying Filters & Search ---`);
+        console.log(`Search Term: '${searchTerm}'`);
+        console.log(`Rare Type Filter: '${selectedRareType}'`);
+        console.log(`Item Type Filter: '${selectedItemType}'`);
+        console.log(`Collection Type Filter: '${selectedCollectionType}'`);
 
         filteredItems = allItems.filter(item => {
             const itemRare = (item.Rare || 'NONE').toString().toUpperCase();
@@ -303,11 +306,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemDesc.includes(searchTerm) ||
                 itemIcon.includes(searchTerm);
 
+            // console.log(`Item: ${item.name || item.Id}, Matches Rare: ${matchesRareType}, Matches Item Type: ${matchesItemType}, Matches Collection: ${matchesCollectionType}, Matches Search: ${matchesSearch}`);
             return matchesRareType && matchesItemType && matchesCollectionType && matchesSearch;
         });
 
-        console.log(`DEBUG: Filtered items count after search/filter: ${filteredItems.length}`);
-        currentPage = 1;
+        console.log(`Total items after filtering: ${filteredItems.length}`);
+        currentPage = 1; // Always reset to page 1 after a search/filter
         renderItems(filteredItems);
     }
 
