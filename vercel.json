@@ -1,0 +1,20 @@
+{
+  "buildCommand": "echo 'No build command needed for static site.'",
+  "outputDirectory": "public",
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "."
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "ignore": [
+    "ITEM.zip",
+    "bot.py"
+  ]
+}
