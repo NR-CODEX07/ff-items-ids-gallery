@@ -1,5 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ... (existing const declarations) ...
+    const itemGrid = document.getElementById('itemGrid');
+    const searchInput = document.getElementById('searchInput');
+    const rareTypeFilter = document.getElementById('rareTypeFilter');
+    const itemTypeFilter = document.getElementById('itemTypeFilter');
+    const collectionTypeFilter = document.getElementById('collectionTypeFilter');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const pageNumbersContainer = document.getElementById('pageNumbers');
+    const modalOverlay = document.getElementById('itemDetailsModalOverlay');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalItemImage = document.getElementById('modalItemImage');
+    const modalItemName = document.getElementById('modalItemName');
+    const modalItemId = document.getElementById('modalItemId');
+    const modalItemType = document.getElementById('modalItemType');
+    const modalItemCollection = document.getElementById('modalItemCollection');
+    const modalItemRarity = document.getElementById('modalItemRarity');
+    const modalItemUnique = document.getElementById('modalItemUnique');
+    const modalItemIcon = document.getElementById('modalItemIcon');
+    const modalItemDescription = document.getElementById('modalItemDescription');
     const homeIcon = document.getElementById('homeIcon');
 
     let allItems = [];
@@ -7,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     const itemsPerPage = 40; // 5x8 grid
 
-    // Function to map rarity to background image filename (expects LOWERCASE PNGs)
+    // Function to map rarity to background image filename (expects ALL PNGs to be LOWERCASE)
     const getRarityBackground = (rarity) => {
         let normalizedRarity = (rarity || 'NONE').toString().toUpperCase().trim();
         normalizedRarity = normalizedRarity.replace(/\s/g, '_');
@@ -15,25 +33,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rarityMap = {
             'NONE': 'none.png',
-            'WHITE': 'white.png', // Renamed from White.jpg to white.png (confirm this locally!)
-            'GREEN': 'green.png', // Renamed from Green.png to green.png
-            'BLUE': 'blue.png',   // Renamed from Blue.png to blue.png
-            'PURPLE': 'purple.png', // Renamed from Purple.png to purple.png
-            'ORANGE': 'orange.png', // Renamed from Orange.png to orange.png
+            'WHITE': 'white.png', // Ensure White.jpg is renamed to white.png
+            'GREEN': 'green.png',
+            'BLUE': 'blue.png',
+            'PURPLE': 'purple.png',
+            'ORANGE': 'orange.png',
             'CARD': 'card.png',
-            'RED': 'red.png',     // Renamed from Red.png to red.png
-            'PURPLE_PLUS': 'purple_plus.png', // Renamed from Purple_Plus.png to purple_plus.png
-            'ORANGE_PLUS': 'orange_plus.png', // Renamed from Orange_Plus.png to orange_plus.png
-            'RED_PLUS': 'red_plus.png',   // Renamed from Red_Plus.png to red_plus.png
+            'RED': 'red.png',
+            'PURPLE_PLUS': 'purple_plus.png',
+            'ORANGE_PLUS': 'orange_plus.png',
+            'RED_PLUS': 'red_plus.png',
+            // Add any other specific rarities you have in your JSON here, e.g.:
+            // 'LEGENDARY': 'legendary.png',
         };
 
-        const filename = rarityMap[normalizedRarity] || 'none.png';
+        const filename = rarityMap[normalizedRarity] || 'none.png'; // Fallback to none.png if rarity not found
         const path = `background/${filename}`;
-        console.log(`DEBUG: Rarity input: '${rarity}', Normalized for map: '${normalizedRarity}', Expected file path: '${path}'`);
+        console.log(`DEBUG: Rarity input: '${rarity}', Normalized for map: '${normalizedRarity}', Expected file path: '${path}'`); // For debugging backgrounds
         return path;
     };
 
-    // Rarity colors for modal display (no change, as it was working)
+    // Rarity colors for modal display
     const rarityColorMap = {
         'NONE': '#888888',
         'WHITE': '#CCCCCC',
@@ -48,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'RED_PLUS': '#b22222'
     };
 
-    // Fetch data from main.json (no functional change here, error messages are detailed)
+    // Fetch data from main.json
     async function fetchItems() {
         itemGrid.innerHTML = '<div class="loading-placeholder" style="grid-column: 1 / -1;">Loading Items...</div>';
         console.log('--- FETCH INITIATED ---');
@@ -104,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Populate filter dropdowns dynamically (no change)
+    // Populate filter dropdowns dynamically
     function populateFilters() {
         const uniqueRareTypes = new Set(['ALL']);
         const uniqueItemTypes = new Set(['ALL']);
@@ -199,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePaginationControls(itemsToDisplay.length);
     }
 
-    // Update pagination buttons and numbers (no change)
+    // Update pagination buttons and numbers
     function updatePaginationControls(totalItemsCount) {
         const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
         pageNumbersContainer.innerHTML = '';
@@ -245,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to reset all filters and search, then re-apply (no change)
+    // Function to reset all filters and search, then re-apply
     function resetAllFiltersAndSearch() {
         searchInput.value = '';
         rareTypeFilter.value = 'ALL';
@@ -254,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyFiltersAndSearch();
     }
 
-    // Apply all filters and search query (no change)
+    // Apply all filters and search query
     function applyFiltersAndSearch() {
         const selectedRareType = rareTypeFilter.value.toUpperCase();
         const selectedItemType = itemTypeFilter.value.toUpperCase();
@@ -292,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderItems(filteredItems);
     }
 
-    // Open item details modal (no change)
+    // Open item details modal
     function openModal(item) {
         modalItemImage.src = `https://free-fire-items.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
         modalItemName.textContent = item.name || 'N/A';
@@ -313,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.add('active');
     }
 
-    // Close item details modal (no change)
+    // Close item details modal
     function closeModal() {
         modalOverlay.classList.remove('active');
     }
