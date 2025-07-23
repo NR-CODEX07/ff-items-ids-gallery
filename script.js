@@ -18,54 +18,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalItemUnique = document.getElementById('modalItemUnique');
     const modalItemIcon = document.getElementById('modalItemIcon');
     const modalItemDescription = document.getElementById('modalItemDescription');
-    const homeIcon = document.getElementById('homeIcon'); // Get the home icon element
+    const homeIcon = document.getElementById('homeIcon');
 
     let allItems = [];
     let filteredItems = [];
     let currentPage = 1;
     const itemsPerPage = 40; // 5x8 grid
 
-    // Function to map rarity to background image filename (expects LOWERCASE PNGs)
+    // Function to map rarity to background image filename (expects ALL PNGs to be LOWERCASE)
     const getRarityBackground = (rarity) => {
         let normalizedRarity = (rarity || 'NONE').toString().toUpperCase().trim();
-        normalizedRarity = normalizedRarity.replace(/\s/g, '_'); // Replace spaces with underscores
-        normalizedRarity = normalizedRarity.replace(/\+/g, '_Plus'); // Replace '+' with '_Plus'
+        normalizedRarity = normalizedRarity.replace(/\s/g, '_');
+        normalizedRarity = normalizedRarity.replace(/\+/g, '_Plus');
 
         const rarityMap = {
             'NONE': 'none.png',
-            'WHITE': 'white.png',
+            'WHITE': 'white.png', // Ensure White.jpg is renamed to white.png (and it's actually a PNG)
             'GREEN': 'green.png',
             'BLUE': 'blue.png',
             'PURPLE': 'purple.png',
             'ORANGE': 'orange.png',
-            'CARD': 'card.png', 
+            'CARD': 'card.png',
             'RED': 'red.png',
             'PURPLE_PLUS': 'purple_plus.png',
             'ORANGE_PLUS': 'orange_plus.png',
             'RED_PLUS': 'red_plus.png',
             // Add any other specific rarities you have in your JSON here, e.g.:
-            // 'LEGENDARY': 'legendary.png', (if you have a 'legendary.png' file)
+            // 'LEGENDARY': 'legendary.png',
         };
 
         const filename = rarityMap[normalizedRarity] || 'none.png'; // Fallback to none.png if rarity not found
         const path = `background/${filename}`;
-        // console.log(`DEBUG: Rarity input: '${rarity}', Normalized for map: '${normalizedRarity}', Expected file path: '${path}'`); // For debugging backgrounds
         return path;
     };
 
     // Rarity colors for modal display
     const rarityColorMap = {
-        'NONE': '#888888',        // Grey for None
-        'WHITE': '#CCCCCC',       // Light grey for White
-        'GREEN': '#38b000',       // Primary Green (as used in CSS)
-        'BLUE': '#007bff',        // Standard Blue
-        'PURPLE': '#800080',      // Standard Purple
-        'ORANGE': '#ff9900',      // Standard Orange
-        'CARD': '#cccccc',        // Light grey for Card
-        'RED': '#dc3545',         // Standard Red
-        'PURPLE_PLUS': '#bf00bf', // Darker Purple
-        'ORANGE_PLUS': '#cc7a00', // Darker Orange
-        'RED_PLUS': '#b22222'     // Darker Red
+        'NONE': '#888888',
+        'WHITE': '#CCCCCC',
+        'GREEN': '#38b000',
+        'BLUE': '#007bff',
+        'PURPLE': '#800080',
+        'ORANGE': '#ff9900',
+        'CARD': '#cccccc',
+        'RED': '#dc3545',
+        'PURPLE_PLUS': '#bf00bf',
+        'ORANGE_PLUS': '#cc7a00',
+        'RED_PLUS': '#b22222'
     };
 
     // Fetch data from main.json
@@ -73,21 +72,20 @@ document.addEventListener('DOMContentLoaded', () => {
         itemGrid.innerHTML = '<div class="loading-placeholder" style="grid-column: 1 / -1;">Loading Items...</div>';
         console.log('--- FETCH INITIATED ---');
 
-        // IMPORTANT: Check if running on file:// protocol for local development
         if (window.location.protocol === 'file:') {
             console.warn('WARNING: Running directly from file:// protocol. This might prevent fetching main.json due to browser security restrictions (CORS). Please use a local web server (e.g., http://localhost:8000/) for development.');
             itemGrid.innerHTML = `
                 <div class="loading-placeholder" style="color: yellow; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
                     <i class="fas fa-server" style="font-size: 3em; margin-bottom: 15px;"></i>
                     <span>Project not running on a web server.</span>
-                    <p style="margin-top: 10px;">Please open it via <strong style="color: white; text-decoration: underline;">http://localhost:8000/</strong> (or similar) after starting a local server.</p>
+                    <p style="margin-top: 10px;">Please open it via <strong style="color: white; text-decoration: underline;">http://localhost:8000/</strong> (or similar) after starting a local server).</p>
                     <p style="font-size: 0.8em; margin-top: 5px;">(e.g., 'python -m http.server 8000' in your project folder, or use VS Code's Live Server)</p>
                 </div>
             `;
-            return; // Stop further execution if running locally without a server
+            return;
         }
 
-        console.log('Attempting to fetch main.json from: ' + window.location.origin + '/main.json'); // Full path for clarity
+        console.log('Attempting to fetch main.json from: ' + window.location.origin + '/main.json');
 
         try {
             const response = await fetch('main.json');
@@ -105,9 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             allItems = data;
-            filteredItems = [...allItems]; // Initialize filteredItems with all items
+            filteredItems = [...allItems];
             populateFilters();
-            applyFiltersAndSearch(); // Call applyFiltersAndSearch initially to render based on filters/search
+            applyFiltersAndSearch();
             console.log('--- FETCH COMPLETE AND INITIAL RENDER ---');
 
         } catch (error) {
@@ -137,12 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
             uniqueCollectionTypes.add(item.collectionType || 'NONE');
         });
 
-        // Clear existing options before populating
         rareTypeFilter.innerHTML = '<option value="ALL">ALL</option>';
         itemTypeFilter.innerHTML = '<option value="ALL">ALL</option>';
         collectionTypeFilter.innerHTML = '<option value="ALL">ALL</option>';
 
-        // Sort filter options alphabetically
         Array.from(uniqueRareTypes).sort((a, b) => a.localeCompare(b)).forEach(type => {
             const option = document.createElement('option');
             option.value = type;
@@ -165,15 +161,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Render items to the grid
+    // Render items to the grid (updated name display logic)
     function renderItems(itemsToDisplay) {
-        itemGrid.innerHTML = ''; // Clear previous items
+        itemGrid.innerHTML = '';
 
         const totalPages = Math.ceil(itemsToDisplay.length / itemsPerPage);
         if (currentPage > totalPages && totalPages > 0) {
-            currentPage = totalPages; // Adjust current page if it's beyond total
+            currentPage = totalPages;
         } else if (totalPages === 0) {
-            currentPage = 1; // If no items, reset to page 1
+            currentPage = 1;
         }
 
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -181,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const itemsForCurrentPage = itemsToDisplay.slice(startIndex, endIndex);
 
         if (itemsForCurrentPage.length === 0 && itemsToDisplay.length > 0) {
-            currentPage = 1; // Go to first page if current page is empty but total items exist
+            currentPage = 1;
             renderItems(itemsToDisplay);
             return;
         }
@@ -195,29 +191,26 @@ document.addEventListener('DOMContentLoaded', () => {
         itemsForCurrentPage.forEach(item => {
             const itemCard = document.createElement('div');
             itemCard.classList.add('item-card');
-            itemCard.dataset.itemId = item.Id; // Store item ID for easy lookup
+            itemCard.dataset.itemId = item.Id;
 
-            // Set rarity background using CSS custom property for the ::before pseudo-element
             const rarityBgUrl = getRarityBackground(item.Rare);
             itemCard.style.setProperty('--bg-image', `url('${rarityBgUrl}')`);
             
             const imageUrl = `https://free-fire-items.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
 
-            // Determine what to display for the name
-            const displayName = item.name || item.Icon || 'Unknown'; // If name is null, use Icon, else 'Unknown'
+            const displayName = item.name || item.Icon || 'Unknown'; 
 
             itemCard.innerHTML = `
                 <img src="${imageUrl}" alt="${displayName}">
                 <h3>${displayName}</h3>
+                <div class="watermark">NR-CODEX</div> <!-- WATERMARK ADDED HERE -->
             `;
 
-            // Error handling for image loading (optional, but good for "Unknown" images)
             const imgElement = itemCard.querySelector('img');
             imgElement.onerror = () => {
                 console.warn(`Failed to load image for item ID: ${item.Id}. API might not have this item or ID is incorrect.`);
             };
 
-            // Event listener for opening modal
             itemCard.addEventListener('click', () => openModal(item));
             itemGrid.appendChild(itemCard);
         });
@@ -228,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update pagination buttons and numbers
     function updatePaginationControls(totalItemsCount) {
         const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
-        pageNumbersContainer.innerHTML = ''; // Clear existing page numbers
+        pageNumbersContainer.innerHTML = '';
 
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
@@ -277,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rareTypeFilter.value = 'ALL';
         itemTypeFilter.value = 'ALL';
         collectionTypeFilter.value = 'ALL';
-        applyFiltersAndSearch(); // Re-apply all filters (which are now reset)
+        applyFiltersAndSearch();
     }
 
     // Apply all filters and search query
@@ -293,16 +286,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemRare = (item.Rare || 'NONE').toString().toUpperCase();
             const itemType = (item.Type || 'NONE').toString().toUpperCase();
             const itemCollectionType = (item.collectionType || 'NONE').toString().toUpperCase();
-            const itemName = (item.name || '').toString().toLowerCase(); // Handles null
-            const itemId = String(item.Id || '').toString().toLowerCase(); // Handles null/undefined Id
-            const itemDesc = (item.desc || '').toString().toLowerCase(); // Handles null
+            const itemName = (item.name || '').toString().toLowerCase();
+            const itemId = String(item.Id || '').toString().toLowerCase();
+            const itemDesc = (item.desc || '').toString().toLowerCase();
             const itemIcon = (item.Icon || '').toString().toLowerCase();
 
             const matchesRareType = selectedRareType === 'ALL' || itemRare === selectedRareType;
             const matchesItemType = selectedItemType === 'ALL' || itemType === selectedItemType;
             const matchesCollectionType = selectedCollectionType === 'ALL' || itemCollectionType === selectedCollectionType;
 
-            // Advanced search logic: check if ANY part of the search term is in any relevant field
             const matchesSearch = searchTerm === '' ||
                 itemName.includes(searchTerm) ||
                 itemId.includes(searchTerm) ||
@@ -315,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         console.log(`DEBUG: Filtered items count after search/filter: ${filteredItems.length}`);
-        currentPage = 1; // Reset to first page after filtering/searching
+        currentPage = 1;
         renderItems(filteredItems);
     }
 
@@ -328,13 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
         modalItemCollection.textContent = item.collectionType || 'N/A';
         modalItemRarity.textContent = item.Rare || 'N/A';
 
-        // Dynamic styling for rarity text in modal
         const itemRarityNormalized = (item.Rare || 'NONE').toString().toUpperCase().replace(/\s/g, '_').replace(/\+/g, '_Plus');
-        const rarityBackgroundColor = rarityColorMap[itemRarityNormalized] || rarityColorMap['NONE']; // Fallback
+        const rarityBackgroundColor = rarityColorMap[itemRarityNormalized] || rarityColorMap['NONE'];
         modalItemRarity.style.backgroundColor = rarityBackgroundColor;
-        // Adjust text color based on background luminance for better contrast
-        modalItemRarity.style.color = (['WHITE', 'CARD'].includes(itemRarityNormalized)) ? '#333' : 'white'; // Make text dark for light backgrounds
-
+        modalItemRarity.style.color = (['WHITE', 'CARD'].includes(itemRarityNormalized)) ? '#333' : 'white';
 
         modalItemUnique.textContent = item.IsUnique ? 'Yes' : 'No';
         modalItemIcon.textContent = item.Icon || 'N/A';
@@ -349,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event Listeners
-    homeIcon.addEventListener('click', resetAllFiltersAndSearch); // Home icon click listener
+    homeIcon.addEventListener('click', resetAllFiltersAndSearch);
     searchInput.addEventListener('input', applyFiltersAndSearch);
     rareTypeFilter.addEventListener('change', applyFiltersAndSearch);
     itemTypeFilter.addEventListener('change', applyFiltersAndSearch);
@@ -382,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) { // Close only if click is directly on overlay, not modal content
+        if (e.target === modalOverlay) {
             closeModal();
         }
     });
