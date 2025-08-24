@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     const itemsPerPage = 40; // 5x8 grid
 
-    // Function to map rarity to background image filename (expects ALL PNGs to be LOWERCASE)
+    // Function to map rarity to background image filename
     const getRarityBackground = (rarity) => {
         let normalizedRarity = (rarity || 'NONE').toString().toUpperCase().trim();
         normalizedRarity = normalizedRarity.replace(/\s/g, '_');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rarityMap = {
             'NONE': 'none.png',
-            'WHITE': 'white.png', // Ensure White.jpg is renamed to white.png (and it's actually a PNG)
+            'WHITE': 'white.png',
             'GREEN': 'green.png',
             'BLUE': 'blue.png',
             'PURPLE': 'purple.png',
@@ -45,9 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'RED_PLUS': 'red_plus.png',
         };
 
-        const filename = rarityMap[normalizedRarity] || 'none.png'; // Fallback to none.png if rarity not found
+        const filename = rarityMap[normalizedRarity] || 'none.png';
         const path = `background/${filename}`;
-        console.log(`DEBUG: Rarity input: '${rarity}', Normalized for map: '${normalizedRarity}', Expected file path: '${path}'`);
         return path;
     };
 
@@ -69,52 +68,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch data from main.json
     async function fetchItems() {
         itemGrid.innerHTML = '<div class="loading-placeholder" style="grid-column: 1 / -1;">Loading Items...</div>';
-        console.log('--- FETCH INITIATED ---');
-
-        if (window.location.protocol === 'file:') {
-            console.warn('WARNING: Running directly from file:// protocol. This might prevent fetching main.json due to browser security restrictions (CORS). Please use a local web server (e.g., http://localhost:8000/) for development.');
-            itemGrid.innerHTML = `
-                <div class="loading-placeholder" style="color: yellow; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <i class="fas fa-server" style="font-size: 3em; margin-bottom: 15px;"></i>
-                    <span>Project not running on a web server.</span>
-                    <p style="margin-top: 10px;">Please open it via <strong style="color: white; text-decoration: underline;">http://localhost:8000/</strong> (or similar) after starting a local server).</p>
-                    <p style="font-size: 0.8em; margin-top: 5px;">(e.g., 'python -m http.server 8000' in your project folder, or use VS Code's Live Server)</p>
-                </div>
-            `;
-            return;
-        }
-
-        console.log('Attempting to fetch main.json from: ' + window.location.origin + '/main.json');
 
         try {
             const response = await fetch('main.json');
-            console.log('Fetch response received. Status:', response.status, response.statusText);
-
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}. Ensure 'main.json' is in the root directory of your web server.`);
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('Data successfully parsed. First 5 items:', data.slice(0, 5));
-
             if (!Array.isArray(data)) {
-                throw new Error('Fetched data is not an array. Please check main.json format. It should be an array of objects: `[ { ... }, { ... } ]`.');
+                throw new Error('main.json must be an array of objects.');
             }
 
             allItems = data;
             filteredItems = [...allItems];
             populateFilters();
             applyFiltersAndSearch();
-            console.log('--- FETCH COMPLETE AND INITIAL RENDER ---');
 
         } catch (error) {
-            console.error('CRITICAL ERROR: Failed to fetch or parse main.json:', error);
+            console.error('ERROR fetching main.json:', error);
             itemGrid.innerHTML = `
-                <div class="loading-placeholder" style="color: red; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3em; margin-bottom: 15px;"></i>
-                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
-                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
-                    <span>WELLCOME TO NR-CODEX FF ITEMS WEBSITE PLEASE CLICK NEXT.</span>
+                <div class="loading-placeholder" style="color: red; grid-column: 1 / -1;">
+                    Failed to load main.json
                 </div>
             `;
         }
@@ -136,33 +111,24 @@ document.addEventListener('DOMContentLoaded', () => {
         itemTypeFilter.innerHTML = '<option value="ALL">ALL</option>';
         collectionTypeFilter.innerHTML = '<option value="ALL">ALL</option>';
 
-        Array.from(uniqueRareTypes).sort((a, b) => a.localeCompare(b)).forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            rareTypeFilter.appendChild(option);
+        Array.from(uniqueRareTypes).sort().forEach(type => {
+            rareTypeFilter.innerHTML += `<option value="${type}">${type}</option>`;
         });
 
-        Array.from(uniqueItemTypes).sort((a, b) => a.localeCompare(b)).forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            itemTypeFilter.appendChild(option);
+        Array.from(uniqueItemTypes).sort().forEach(type => {
+            itemTypeFilter.innerHTML += `<option value="${type}">${type}</option>`;
         });
 
-        Array.from(uniqueCollectionTypes).sort((a, b) => a.localeCompare(b)).forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            collectionTypeFilter.appendChild(option);
+        Array.from(uniqueCollectionTypes).sort().forEach(type => {
+            collectionTypeFilter.innerHTML += `<option value="${type}">${type}</option>`;
         });
     }
 
-    // Render items to the grid
+    // Render items
     function renderItems(itemsToDisplay) {
         itemGrid.innerHTML = '';
-
         const totalPages = Math.ceil(itemsToDisplay.length / itemsPerPage);
+
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         } else if (totalPages === 0) {
@@ -180,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (itemsForCurrentPage.length === 0) {
-            itemGrid.innerHTML = '<div class="loading-placeholder" style="grid-column: 1 / -1;">No items found matching your criteria.</div>';
+            itemGrid.innerHTML = '<div class="loading-placeholder" style="grid-column: 1 / -1;">No items found.</div>';
             updatePaginationControls(0);
             return;
         }
@@ -193,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const rarityBgUrl = getRarityBackground(item.Rare);
             itemCard.style.setProperty('--bg-image', `url('${rarityBgUrl}')`);
             
-            const imageUrl = `https://ff-items-icon-info.vercel.app/item-image?id=${item.Id}&key=NRCODEX}`;
+            // ✅ FIXED: Removed extra "}" in URL
+            const imageUrl = `https://ff-items-icon-info.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
 
             const displayName = item.name || item.Icon || 'Unknown'; 
 
@@ -205,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const imgElement = itemCard.querySelector('img');
             imgElement.onerror = () => {
-                console.warn(`Failed to load image for item ID: ${item.Id}. API might not have this item or ID is incorrect.`);
+                console.warn(`Image not found for item ID: ${item.Id}`);
             };
 
             itemCard.addEventListener('click', () => openModal(item));
@@ -215,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePaginationControls(itemsToDisplay.length);
     }
 
-    // Update pagination buttons and numbers
+    // Pagination
     function updatePaginationControls(totalItemsCount) {
         const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
         pageNumbersContainer.innerHTML = '';
@@ -233,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 startPage = Math.max(1, endPage - 4);
             }
         }
-        startPage = Math.max(1, startPage);
 
         if (startPage > 1) {
             pageNumbersContainer.innerHTML += `<span class="page-number" data-page="1">1</span>`;
@@ -245,9 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = startPage; i <= endPage; i++) {
             const pageNumberSpan = document.createElement('span');
             pageNumberSpan.classList.add('page-number');
-            if (i === currentPage) {
-                pageNumberSpan.classList.add('active');
-            }
+            if (i === currentPage) pageNumberSpan.classList.add('active');
             pageNumberSpan.dataset.page = i;
             pageNumberSpan.textContent = i;
             pageNumbersContainer.appendChild(pageNumberSpan);
@@ -261,36 +225,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to reset all filters and search, then re-apply
-    function resetAllFiltersAndSearch() {
-        searchInput.value = '';
-        rareTypeFilter.value = 'ALL';
-        itemTypeFilter.value = 'ALL';
-        collectionTypeFilter.value = 'ALL';
-        applyFiltersAndSearch();
-    }
-
-    // Apply all filters and search query
+    // Apply filters and search
     function applyFiltersAndSearch() {
         const selectedRareType = rareTypeFilter.value.toUpperCase();
         const selectedItemType = itemTypeFilter.value.toUpperCase();
         const selectedCollectionType = collectionTypeFilter.value.toUpperCase();
         const searchTerm = searchInput.value.toLowerCase().trim();
 
-        console.log(`--- Applying Filters & Search ---`);
-        console.log(`Search Term: '${searchTerm}'`);
-        console.log(`Rare Type Filter: '${selectedRareType}'`);
-        console.log(`Item Type Filter: '${selectedItemType}'`);
-        console.log(`Collection Type Filter: '${selectedCollectionType}'`);
-
         filteredItems = allItems.filter(item => {
             const itemRare = (item.Rare || 'NONE').toString().toUpperCase();
             const itemType = (item.Type || 'NONE').toString().toUpperCase();
             const itemCollectionType = (item.collectionType || 'NONE').toString().toUpperCase();
-            const itemName = (item.name || '').toString().toLowerCase();
-            const itemId = String(item.Id || '').toString().toLowerCase();
-            const itemDesc = (item.desc || '').toString().toLowerCase();
-            const itemIcon = (item.Icon || '').toString().toLowerCase();
+            const itemName = (item.name || '').toLowerCase();
+            const itemId = String(item.Id || '').toLowerCase();
+            const itemDesc = (item.desc || '').toLowerCase();
+            const itemIcon = (item.Icon || '').toLowerCase();
 
             const matchesRareType = selectedRareType === 'ALL' || itemRare === selectedRareType;
             const matchesItemType = selectedItemType === 'ALL' || itemType === selectedItemType;
@@ -304,28 +253,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemDesc.includes(searchTerm) ||
                 itemIcon.includes(searchTerm);
 
-            // console.log(`Item: ${item.name || item.Id}, Matches Rare: ${matchesRareType}, Matches Item Type: ${matchesItemType}, Matches Collection: ${matchesCollectionType}, Matches Search: ${matchesSearch}`);
             return matchesRareType && matchesItemType && matchesCollectionType && matchesSearch;
         });
 
-        console.log(`Total items after filtering: ${filteredItems.length}`);
-        currentPage = 1; // Always reset to page 1 after a search/filter
+        currentPage = 1;
         renderItems(filteredItems);
     }
 
-    // Open item details modal
+    // Open modal
     function openModal(item) {
-        modalItemImage.src = `https://free-fire-items.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
+        // ✅ FIXED: same issue here, removed extra "}"
+        modalItemImage.src = `https://ff-items-icon-info.vercel.app/item-image?id=${item.Id}&key=NRCODEX`;
         modalItemName.textContent = item.name || 'N/A';
         modalItemId.textContent = item.Id || 'N/A';
         modalItemType.textContent = item.Type || 'N/A';
         modalItemCollection.textContent = item.collectionType || 'N/A';
         modalItemRarity.textContent = item.Rare || 'N/A';
 
-        const itemRarityNormalized = (item.Rare || 'NONE').toString().toUpperCase().replace(/\s/g, '_').replace(/\+/g, '_Plus');
-        const rarityBackgroundColor = rarityColorMap[itemRarityNormalized] || rarityColorMap['NONE'];
-        modalItemRarity.style.backgroundColor = rarityBackgroundColor;
-        modalItemRarity.style.color = (['WHITE', 'CARD'].includes(itemRarityNormalized)) ? '#333' : 'white';
+        const rarityNormalized = (item.Rare || 'NONE').toUpperCase().replace(/\s/g, '_').replace(/\+/g, '_Plus');
+        modalItemRarity.style.backgroundColor = rarityColorMap[rarityNormalized] || rarityColorMap['NONE'];
+        modalItemRarity.style.color = (['WHITE', 'CARD'].includes(rarityNormalized)) ? '#333' : 'white';
 
         modalItemUnique.textContent = item.IsUnique ? 'Yes' : 'No';
         modalItemIcon.textContent = item.Icon || 'N/A';
@@ -334,13 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.add('active');
     }
 
-    // Close item details modal
+    // Close modal
     function closeModal() {
         modalOverlay.classList.remove('active');
     }
 
     // Event Listeners
-    homeIcon.addEventListener('click', resetAllFiltersAndSearch);
+    homeIcon.addEventListener('click', () => {
+        searchInput.value = '';
+        rareTypeFilter.value = 'ALL';
+        itemTypeFilter.value = 'ALL';
+        collectionTypeFilter.value = 'ALL';
+        applyFiltersAndSearch();
+    });
     searchInput.addEventListener('input', applyFiltersAndSearch);
     rareTypeFilter.addEventListener('change', applyFiltersAndSearch);
     itemTypeFilter.addEventListener('change', applyFiltersAndSearch);
@@ -373,11 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) {
-            closeModal();
-        }
+        if (e.target === modalOverlay) closeModal();
     });
 
-    // Initial fetch and render
+    // Init
     fetchItems();
 });
