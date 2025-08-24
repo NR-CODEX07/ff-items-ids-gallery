@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rarityBgUrl = getRarityBackground(item.Rare);
             itemCard.style.setProperty('--bg-image', `url('${rarityBgUrl}')`);
             
-            const imageUrl = `https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/${item.Id}`;
+            const imageUrl = `https://ff-items-icon-info.vercel.app/item-image?id=${item.Id}&key=NRCODEX}`;
 
             const displayName = item.name || item.Icon || 'Unknown'; 
 
